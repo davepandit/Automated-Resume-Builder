@@ -7,7 +7,8 @@ const connectDB = async () => {
       dbName: "ai_resume_builder",
     });
 
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    console.log(`MongoDB Connection successful✅`);
+    console.log(`Connection host ID: ${conn.connection.host}`);
     return conn;
   } catch (err) {
     throw new ApiError(500, "Database connection failed", [], err.stack);
