@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { addResumeData } from "@/features/resume/resumeFeatures";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { AIChatSession } from "@/Services/AiModel";
+// import { AIChatSession } from "@/Services/AiModel";
 import { updateThisResume } from "@/Services/resumeAPI";
 
 const prompt =
@@ -63,47 +63,38 @@ function Summary({ resumeInfo, enanbledNext, enanbledPrev }) {
     setSummary(summary);
   };
 
-  const GenerateSummeryFromAI = async () => {
-    setLoading(true);
-    console.log("Generate Summery From AI for", resumeInfo?.jobTitle);
-    if (!resumeInfo?.jobTitle) {
-      toast("Please Add Job Title");
-      setLoading(false);
-      return;
-    }
-    const PROMPT = prompt.replace("{jobTitle}", resumeInfo?.jobTitle);
-    try {
-      const result = await AIChatSession.sendMessage(PROMPT);
-      console.log(JSON.parse(result.response.text()));
-      setAiGenerateSummeryList(JSON.parse(result.response.text()));
-      toast("Summery Generated", "success");
-    } catch (error) {
-      console.log(error);
-      toast("${error.message}", `${JSON.stringify(error.message)}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const GenerateSummeryFromAI = async () => {
+  //   setLoading(true);
+  //   console.log("Generate Summery From AI for", resumeInfo?.jobTitle);
+  //   if (!resumeInfo?.jobTitle) {
+  //     toast("Please Add Job Title");
+  //     setLoading(false);
+  //     return;
+  //   }
+  //   const PROMPT = prompt.replace("{jobTitle}", resumeInfo?.jobTitle);
+  //   try {
+  //     const result = await AIChatSession.sendMessage(PROMPT);
+  //     console.log(JSON.parse(result.response.text()));
+  //     setAiGenerateSummeryList(JSON.parse(result.response.text()));
+  //     toast("Summery Generated", "success");
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast("${error.message}", `${JSON.stringify(error.message)}`);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div>
       <div className="p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10">
-        <h2 className="font-bold text-lg">Summary</h2>
-        <p>Add Summary for your job title</p>
+        <h2 className="font-bold text-lg">
+          Achievements and Co-Curricular Activities
+        </h2>
 
         <form className="mt-7" onSubmit={onSave}>
           <div className="flex justify-between items-end">
-            <label>Add Summary</label>
-            {/* generate ai button to be implemented */}
-            {/* <Button
-              variant="outline"
-              onClick={() => GenerateSummeryFromAI()}
-              type="button"
-              size="sm"
-              className="border-primary text-primary flex gap-2"
-            >
-              <Sparkles className="h-4 w-4" /> Generate from AI
-            </Button> */}
+            <label>Add your achievements and extra-currcular activities</label>
           </div>
           <Textarea
             name="summary"

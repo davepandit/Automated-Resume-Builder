@@ -6,7 +6,6 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { addResumeData } from "@/features/resume/resumeFeatures";
 import { useParams } from "react-router-dom";
-import { updateResumeData } from "@/Services/GlobalApi";
 import { updateThisResume } from "@/Services/resumeAPI";
 import { toast } from "sonner";
 
@@ -20,13 +19,14 @@ const formFields = {
   currentlyWorking: "",
   workSummary: "",
 };
+
 function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
   const [experienceList, setExperienceList] = React.useState(
     resumeInfo?.experience || []
   );
   const [loading, setLoading] = React.useState(false);
+  const [errors, setErrors] = React.useState([]);
   const { resume_id } = useParams();
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -47,9 +47,7 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
 
   const removeExperience = (index) => {
     const list = [...experienceList];
-    const newList = list.filter((item, i) => {
-      if (i !== index) return true;
-    });
+    const newList = list.filter((_, i) => i !== index);
     setExperienceList(newList);
   };
 
@@ -58,40 +56,58 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
     enanbledPrev(false);
     const { name, value } = e.target;
     const list = [...experienceList];
-    const newListData = {
-      ...list[index],
-      [name]: value,
-    };
-    list[index] = newListData;
+    list[index] = { ...list[index], [name]: value };
     setExperienceList(list);
   };
 
   const handleRichTextEditor = (value, name, index) => {
     const list = [...experienceList];
-    const newListData = {
-      ...list[index],
-      [name]: value,
-    };
-    list[index] = newListData;
+    list[index] = { ...list[index], [name]: value };
     setExperienceList(list);
   };
 
+  const validateExperience = () => {
+    const newErrors = experienceList.map((exp) => {
+      const expErrors = {};
+      const today = new Date().toISOString().split("T")[0];
+
+      if (!exp.title.trim()) expErrors.title = "Position title is required.";
+      if (!exp.companyName.trim())
+        expErrors.companyName = "Company name is required.";
+      if (!exp.city.trim()) expErrors.city = "City is required.";
+      if (!exp.state.trim()) expErrors.state = "State is required.";
+
+      if (!exp.startDate) expErrors.startDate = "Start date is required.";
+      else if (exp.startDate > today)
+        expErrors.startDate = "Start date cannot be in the future.";
+
+      if (!exp.endDate) expErrors.endDate = "End date is required.";
+      else if (exp.endDate > today)
+        expErrors.endDate = "End date cannot be in the future.";
+
+      if (exp.startDate && exp.endDate && exp.startDate > exp.endDate)
+        expErrors.endDate = "End date cannot be before start date.";
+
+      if (!exp.workSummary?.trim())
+        expErrors.workSummary = "Work summary is required.";
+
+      return expErrors;
+    });
+
+    setErrors(newErrors);
+    return newErrors.every((e) => Object.keys(e).length === 0);
+  };
+
   const onSave = () => {
+    if (!validateExperience()) return;
+
     setLoading(true);
-    const data = {
-      data: {
-        experience: experienceList,
-      },
-    };
+    const data = { data: { experience: experienceList } };
     if (resume_id) {
       console.log("Started Updating Experience");
       updateThisResume(resume_id, data)
-        .then((data) => {
-          toast("Resume Updated", "success");
-        })
-        .catch((error) => {
-          toast("Error updating resume", `${error.message}`);
-        })
+        .then(() => toast("Resume Updated", "success"))
+        .catch((error) => toast("Error updating resume", `${error.message}`))
         .finally(() => {
           enanbledNext(true);
           enanbledPrev(true);
@@ -99,6 +115,7 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
         });
     }
   };
+
   return (
     <div>
       <div className="p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10">
@@ -112,81 +129,125 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
                 <Button
                   variant="outline"
                   className="text-red-500"
-                  onClick={(e) => {
-                    removeExperience(index);
-                  }}
+                  onClick={() => removeExperience(index)}
                 >
                   <Trash2 />
                 </Button>
               </div>
               <div className="grid grid-cols-2 gap-3 border p-3 my-5 rounded-lg">
+                {/* Position Title */}
                 <div>
-                  <label className="text-xs">Position Tittle</label>
+                  <label className="text-xs font-medium">
+                    Position Title <span className="text-red-500">*</span>
+                  </label>
                   <Input
                     type="text"
                     name="title"
                     value={experience?.title}
-                    onChange={(e) => {
-                      handleChange(e, index);
-                    }}
+                    onChange={(e) => handleChange(e, index)}
                   />
+                  {errors[index]?.title && (
+                    <p className="text-red-500 text-xs">
+                      {errors[index].title}
+                    </p>
+                  )}
                 </div>
+
+                {/* Company Name */}
                 <div>
-                  <label className="text-xs">Company Name</label>
+                  <label className="text-xs font-medium">
+                    Company Name <span className="text-red-500">*</span>
+                  </label>
                   <Input
                     type="text"
                     name="companyName"
                     value={experience?.companyName}
-                    onChange={(e) => {
-                      handleChange(e, index);
-                    }}
+                    onChange={(e) => handleChange(e, index)}
                   />
+                  {errors[index]?.companyName && (
+                    <p className="text-red-500 text-xs">
+                      {errors[index].companyName}
+                    </p>
+                  )}
                 </div>
+
+                {/* City */}
                 <div>
-                  <label className="text-xs">City</label>
+                  <label className="text-xs font-medium">
+                    City <span className="text-red-500">*</span>
+                  </label>
                   <Input
                     type="text"
                     name="city"
                     value={experience?.city}
-                    onChange={(e) => {
-                      handleChange(e, index);
-                    }}
+                    onChange={(e) => handleChange(e, index)}
                   />
+                  {errors[index]?.city && (
+                    <p className="text-red-500 text-xs">{errors[index].city}</p>
+                  )}
                 </div>
+
+                {/* State */}
                 <div>
-                  <label className="text-xs">State</label>
+                  <label className="text-xs font-medium">
+                    State <span className="text-red-500">*</span>
+                  </label>
                   <Input
                     type="text"
                     name="state"
                     value={experience?.state}
-                    onChange={(e) => {
-                      handleChange(e, index);
-                    }}
+                    onChange={(e) => handleChange(e, index)}
                   />
+                  {errors[index]?.state && (
+                    <p className="text-red-500 text-xs">
+                      {errors[index].state}
+                    </p>
+                  )}
                 </div>
+
+                {/* Start Date */}
                 <div>
-                  <label className="text-xs">StartDate</label>
+                  <label className="text-xs font-medium">
+                    Start Date <span className="text-red-500">*</span>
+                  </label>
                   <Input
                     type="date"
                     name="startDate"
                     value={experience?.startDate}
-                    onChange={(e) => {
-                      handleChange(e, index);
-                    }}
+                    max={new Date().toISOString().split("T")[0]}
+                    onChange={(e) => handleChange(e, index)}
                   />
+                  {errors[index]?.startDate && (
+                    <p className="text-red-500 text-xs">
+                      {errors[index].startDate}
+                    </p>
+                  )}
                 </div>
+
+                {/* End Date */}
                 <div>
-                  <label className="text-xs">End Date</label>
+                  <label className="text-xs font-medium">
+                    End Date <span className="text-red-500">*</span>
+                  </label>
                   <Input
                     type="date"
                     name="endDate"
+                    max={new Date().toISOString().split("T")[0]}
                     value={experience?.endDate}
-                    onChange={(e) => {
-                      handleChange(e, index);
-                    }}
+                    onChange={(e) => handleChange(e, index)}
                   />
+                  {errors[index]?.endDate && (
+                    <p className="text-red-500 text-xs">
+                      {errors[index].endDate}
+                    </p>
+                  )}
                 </div>
+
+                {/* Work Summary */}
                 <div className="col-span-2">
+                  <label className="text-xs font-medium">
+                    Work Summary <span className="text-red-500">*</span>
+                  </label>
                   <RichTextEditor
                     index={index}
                     defaultValue={experience?.workSummary}
@@ -195,11 +256,17 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
                     }
                     resumeInfo={resumeInfo}
                   />
+                  {errors[index]?.workSummary && (
+                    <p className="text-red-500 text-xs">
+                      {errors[index].workSummary}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
           ))}
         </div>
+
         <div className="flex justify-between py-2">
           <Button
             onClick={addExperience}
@@ -210,7 +277,7 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
             Experience
           </Button>
           <Button onClick={onSave}>
-            {loading ? <LoaderCircle className=" animate-spin" /> : "Save"}
+            {loading ? <LoaderCircle className="animate-spin" /> : "Save"}
           </Button>
         </div>
       </div>
