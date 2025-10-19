@@ -6,15 +6,14 @@ import { useDispatch } from "react-redux";
 import { logoutUser } from "@/Services/login";
 import { addUserData } from "@/features/user/userFeatures";
 
-function Header({user}) {
+function Header({ user }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(user){
+    if (user) {
       console.log("Printing From Header User Found");
-    }
-    else{
+    } else {
       console.log("Printing From Header User Not Found");
     }
   }, []);
@@ -36,7 +35,9 @@ function Header({user}) {
       id="printHeader"
       className="flex justify-between px-10 py-5 shadow-md items-center"
     >
-      <img src={logo} alt="logo" width={200} height={100} />
+      <Link to="/">
+        <img src={logo} alt="logo" width={200} height={100} />
+      </Link>
       {user ? (
         <div className="flex items-center gap-4">
           <Button
