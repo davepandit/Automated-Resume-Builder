@@ -120,7 +120,7 @@ export const verifyOtp = async (req, res) => {
         .json({ success: false, message: "No OTP found for this email." });
     }
 
-    // ✅ Use expiresAt from your JSON instead of createdAt
+    // Use expiresAt from your JSON instead of createdAt
     const isExpired = Date.now() > storedEntry.expiresAt;
     if (isExpired) {
       delete otpStore[email];
