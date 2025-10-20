@@ -11,6 +11,8 @@ import { motion } from "framer-motion";
 import { loginUser, registerUser } from "@/Services/login";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { VITE_APP_URL } from "@/config/config";
 
 function AuthPage() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -26,6 +28,129 @@ function AuthPage() {
     email: "",
     password: "",
   });
+
+  // new states for OTP flow
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpVerified, setOtpVerified] = useState(false);
+
+  // axios instance
+  const axiosInstance = axios.create({
+    baseURL: VITE_APP_URL + "api/",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    withCredentials: true,
+  });
+
+  // Send OTP to backend
+  const handleSendOtp = async () => {
+    setSignUpError("");
+    setErrors({});
+    if (!email.trim()) {
+      setErrors({ email: "Please enter an email first." });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await axiosInstance.post("users/send-otp", { email });
+      if (res.data.success) {
+        setOtpSent(true);
+        alert("OTP sent to your email!");
+      } else {
+        setSignUpError(res.data.message || "Failed to send OTP.");
+      }
+    } catch (error) {
+      setSignUpError(error?.response?.data?.message || "Failed to send OTP.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Submit Registration (with OTP check)
+  const handleSignUpSubmit = async (event) => {
+    event.preventDefault();
+    setSignUpError("");
+    const { fullname, email, password } = event.target.elements;
+    const newErrors = { fullname: "", email: "", password: "" };
+
+    // Full name validation
+    if (!fullname.value.trim()) {
+      newErrors.fullname = "Full name is required.";
+    } else if (fullname.value.trim().length < 3) {
+      newErrors.fullname = "Full name must be at least 3 characters.";
+    }
+
+    // Email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.value.trim()) {
+      newErrors.email = "Email is required.";
+    } else if (!emailPattern.test(email.value)) {
+      newErrors.email = "Please enter a valid email address.";
+    }
+
+    // Password validation
+    if (!password.value.trim()) {
+      newErrors.password = "Password is required.";
+    } else if (password.value.length < 8) {
+      newErrors.password = "Password must be at least 8 characters long.";
+    } else if (
+      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(password.value)
+    ) {
+      newErrors.password =
+        "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some((msg) => msg)) return;
+
+    if (!otpVerified) {
+      setSignUpError("Please verify your email with the correct OTP first.");
+      return;
+    }
+
+    // Continue registration
+    setLoading(true);
+    const data = {
+      fullName: fullname.value,
+      email: email.value,
+      password: password.value,
+    };
+
+    try {
+      const response = await registerUser(data);
+      if (response?.statusCode === 201) {
+        handleSignInSubmit(event);
+      }
+    } catch (error) {
+      setSignUpError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Verify OTP
+  const handleVerifyOtp = async () => {
+    setLoading(true);
+    try {
+      const res = await axiosInstance.post("users/verify-otp", {
+        email,
+        otp,
+      });
+      if (res.data.success) {
+        setOtpVerified(true);
+        alert("Email verified successfully!");
+      } else {
+        setSignUpError(res.data.message || "Invalid OTP");
+      }
+    } catch (error) {
+      setSignUpError(error?.response?.data?.message || "Failed to verify OTP.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const navigate = useNavigate();
 
@@ -76,63 +201,63 @@ function AuthPage() {
     }
   };
 
-  const handleSignUpSubmit = async (event) => {
-    event.preventDefault();
-    setSignUpError("");
-    const { fullname, email, password } = event.target.elements;
-    const newErrors = { fullname: "", email: "", password: "" };
+  // const handleSignUpSubmit = async (event) => {
+  //   event.preventDefault();
+  //   setSignUpError("");
+  //   const { fullname, email, password } = event.target.elements;
+  //   const newErrors = { fullname: "", email: "", password: "" };
 
-    // Full name validation
-    if (!fullname.value.trim()) {
-      newErrors.fullname = "Full name is required.";
-    } else if (fullname.value.trim().length < 3) {
-      newErrors.fullname = "Full name must be at least 3 characters.";
-    }
+  //   // Full name validation
+  //   if (!fullname.value.trim()) {
+  //     newErrors.fullname = "Full name is required.";
+  //   } else if (fullname.value.trim().length < 3) {
+  //     newErrors.fullname = "Full name must be at least 3 characters.";
+  //   }
 
-    // Email validation
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.value.trim()) {
-      newErrors.email = "Email is required.";
-    } else if (!emailPattern.test(email.value)) {
-      newErrors.email = "Please enter a valid email address.";
-    }
+  //   // Email validation
+  //   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   if (!email.value.trim()) {
+  //     newErrors.email = "Email is required.";
+  //   } else if (!emailPattern.test(email.value)) {
+  //     newErrors.email = "Please enter a valid email address.";
+  //   }
 
-    // Password validation
-    if (!password.value.trim()) {
-      newErrors.password = "Password is required.";
-    } else if (password.value.length < 8) {
-      newErrors.password = "Password must be at least 8 characters long.";
-    } else if (
-      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(password.value)
-    ) {
-      newErrors.password =
-        "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.";
-    }
+  //   // Password validation
+  //   if (!password.value.trim()) {
+  //     newErrors.password = "Password is required.";
+  //   } else if (password.value.length < 8) {
+  //     newErrors.password = "Password must be at least 8 characters long.";
+  //   } else if (
+  //     !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(password.value)
+  //   ) {
+  //     newErrors.password =
+  //       "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.";
+  //   }
 
-    setErrors(newErrors);
+  //   setErrors(newErrors);
 
-    // Stop if any errors exist
-    if (Object.values(newErrors).some((msg) => msg)) return;
+  //   // Stop if any errors exist
+  //   if (Object.values(newErrors).some((msg) => msg)) return;
 
-    // Continue with your original logic
-    setLoading(true);
-    console.log("User Registration Started");
-    const data = {
-      fullName: fullname.value,
-      email: email.value,
-      password: password.value,
-    };
-    try {
-      const response = await registerUser(data);
-      if (response?.statusCode === 201) {
-        handleSignInSubmit(event);
-      }
-    } catch (error) {
-      setSignUpError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //   // Continue with your original logic
+  //   setLoading(true);
+  //   console.log("User Registration Started");
+  //   const data = {
+  //     fullName: fullname.value,
+  //     email: email.value,
+  //     password: password.value,
+  //   };
+  //   try {
+  //     const response = await registerUser(data);
+  //     if (response?.statusCode === 201) {
+  //       handleSignInSubmit(event);
+  //     }
+  //   } catch (error) {
+  //     setSignUpError(error.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gradient-to-r from-green-400 to-purple-500">
@@ -203,7 +328,7 @@ function AuthPage() {
                 )}
               </div>
 
-              {/* Email */}
+              {/* Email + Verify Button */}
               <div className="flex flex-col space-y-1">
                 <label className="font-medium text-gray-700">
                   Email <span className="text-red-500">*</span>
@@ -215,17 +340,53 @@ function AuthPage() {
                     name="email"
                     placeholder="Email"
                     required
-                    pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                    title="Please enter a valid email address (e.g. user@example.com)"
                     className="outline-none w-full"
                     onChange={(e) => setEmail(e.target.value)}
                     value={email}
+                    disabled={otpSent || otpVerified}
                   />
+                  {!otpSent && (
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      className="bg-blue-500 text-white px-3 py-1 rounded-md text-sm"
+                      disabled={loading}
+                    >
+                      {loading ? "Sending..." : "Verify Email"}
+                    </button>
+                  )}
                 </div>
                 {errors.email && (
                   <p className="text-red-500 text-sm">{errors.email}</p>
                 )}
               </div>
+
+              {/* OTP Input (visible after OTP sent) */}
+              {otpSent && !otpVerified && (
+                <div className="flex flex-col space-y-1">
+                  <label className="font-medium text-gray-700">
+                    Enter OTP <span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex items-center border rounded-md border-gray-300 p-2 gap-3">
+                    <input
+                      type="text"
+                      name="otp"
+                      placeholder="Enter the OTP sent to your email"
+                      className="outline-none w-full"
+                      onChange={(e) => setOtp(e.target.value)}
+                      value={otp}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleVerifyOtp}
+                      className="bg-green-500 text-white px-3 py-1 rounded-md text-sm"
+                      disabled={loading}
+                    >
+                      {loading ? "Verifying..." : "Verify OTP"}
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Password */}
               <div className="flex flex-col space-y-1">
@@ -239,9 +400,6 @@ function AuthPage() {
                     name="password"
                     placeholder="Password"
                     required
-                    minLength={6}
-                    pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$"
-                    title="Password must be at least 6 characters long and contain both letters and numbers."
                     className="outline-none w-full"
                     onChange={(e) => setPassword(e.target.value)}
                     value={password}
@@ -263,22 +421,25 @@ function AuthPage() {
                 <p className="text-red-500">Please Note:</p>
                 <p>Password length should be of at least 8 characters.</p>
                 <p>
-                  Password must include one at least one uppercase letter, one
-                  lowercase letter, one number, and one special character.
+                  Password must include one uppercase, one lowercase, one
+                  number, and one special character.
                 </p>
               </div>
 
-              {/* Submit */}
-              <button
-                type="submit"
-                className="w-full bg-green-400 text-white py-2 rounded-md flex justify-center items-center"
-              >
-                {loading ? (
-                  <Loader2 className="animate-spin text-center" />
-                ) : (
-                  "Register User"
-                )}
-              </button>
+              {/* Register Button only visible when OTP verified */}
+              {otpVerified && (
+                <button
+                  type="submit"
+                  className="w-full bg-green-400 text-white py-2 rounded-md flex justify-center items-center"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <Loader2 className="animate-spin text-center" />
+                  ) : (
+                    "Register User"
+                  )}
+                </button>
+              )}
 
               {signUpError && (
                 <div className="text-red-500 text-center mt-2">
