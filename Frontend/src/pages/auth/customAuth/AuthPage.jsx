@@ -6,6 +6,7 @@ import {
   FaUserPlus,
   FaEye,
   FaEyeSlash,
+  FaEnvelope,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { loginUser, registerUser } from "@/Services/login";
@@ -20,7 +21,6 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [signInError, setSignInError] = useState("");
   const [loading, setLoading] = useState(false);
-  // state to display the errors
   const [errors, setErrors] = useState({
     fullname: "",
     email: "",
@@ -29,6 +29,8 @@ function AuthPage() {
 
   const navigate = useNavigate();
 
+  // --- LOGIC REMAINS UNCHANGED ---
+
   const handleSignInSubmit = async (event) => {
     event.preventDefault();
     setSignInError("");
@@ -36,7 +38,6 @@ function AuthPage() {
     const { email, password } = event.target.elements;
     const newErrors = { email: "", password: "" };
 
-    // Email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.value.trim()) {
       newErrors.email = "Email is required.";
@@ -44,7 +45,6 @@ function AuthPage() {
       newErrors.email = "Please enter a valid email address.";
     }
 
-    // Password validation
     if (!password.value.trim()) {
       newErrors.password = "Password is required.";
     } else if (password.value.length < 6) {
@@ -53,10 +53,8 @@ function AuthPage() {
 
     setErrors(newErrors);
 
-    // Stop if any validation errors exist
     if (Object.values(newErrors).some((msg) => msg)) return;
 
-    // Continue with your original logic
     setLoading(true);
     const data = { email: email.value, password: password.value };
 
@@ -82,14 +80,12 @@ function AuthPage() {
     const { fullname, email, password } = event.target.elements;
     const newErrors = { fullname: "", email: "", password: "" };
 
-    // Full name validation
     if (!fullname.value.trim()) {
       newErrors.fullname = "Full name is required.";
     } else if (fullname.value.trim().length < 3) {
       newErrors.fullname = "Full name must be at least 3 characters.";
     }
 
-    // Email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.value.trim()) {
       newErrors.email = "Email is required.";
@@ -97,7 +93,6 @@ function AuthPage() {
       newErrors.email = "Please enter a valid email address.";
     }
 
-    // Password validation
     if (!password.value.trim()) {
       newErrors.password = "Password is required.";
     } else if (password.value.length < 8) {
@@ -111,10 +106,8 @@ function AuthPage() {
 
     setErrors(newErrors);
 
-    // Stop if any errors exist
     if (Object.values(newErrors).some((msg) => msg)) return;
 
-    // Continue with your original logic
     setLoading(true);
     console.log("User Registration Started");
     const data = {
@@ -134,47 +127,87 @@ function AuthPage() {
     }
   };
 
+  // Helper function for styling inputs based on validation state
+  const getFieldClasses = (fieldName, isPassword = false) => {
+    const error = isPassword ? errors.password : errors[fieldName];
+    return `flex items-center border rounded-xl p-3 gap-3 shadow-sm transition-all duration-300 ${
+      error
+        ? "border-red-500 bg-red-50"
+        : "border-gray-300 focus-within:border-blue-600 focus-within:shadow-md"
+    }`;
+  };
+
+  // --- DARK BLUE BACKGROUND & WHITE COMPONENT START ---
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gradient-to-r from-green-400 to-purple-500">
+    // Background: Dark Blue/Indigo Gradient
+    <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gradient-to-br from-gray-900 via-indigo-900 to-slate-900">
       <motion.div
-        className="relative w-full max-w-lg p-8 bg-white rounded-lg shadow-lg"
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        // Form Component: Bright White Background
+        className="relative w-full max-w-md px-10 py-10 bg-white rounded-3xl shadow-2xl z-10"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <div className="flex justify-around mb-6 border-b border-gray-200">
+        <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-6">
+          Welcome to Automated Resume Builder
+        </h1>
+
+        {/* Tab Buttons with Animated Indicator */}
+        <div className="flex justify-center mb-8 border-b border-gray-200">
           <button
             onClick={() => setIsSignUp(false)}
-            className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-colors duration-300 rounded-t-lg ${
-              !isSignUp ? "bg-green-400 text-white" : "text-gray-600"
+            className={`relative flex items-center justify-center flex-1 gap-2 px-4 py-3 text-lg font-bold transition-all duration-300 ${
+              !isSignUp ? "text-blue-700" : "text-gray-500 hover:text-gray-700"
             }`}
           >
-            <FaSignInAlt />
+            <FaSignInAlt className="text-xl" />
             Sign In
+            {!isSignUp && (
+              <motion.span
+                layoutId="tabIndicator"
+                className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-t-lg"
+                transition={{ duration: 0.3 }}
+              ></motion.span>
+            )}
           </button>
           <button
             onClick={() => setIsSignUp(true)}
-            className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-colors duration-300 rounded-t-lg ${
-              isSignUp ? "bg-green-400 text-white" : "text-gray-600"
+            className={`relative flex items-center justify-center flex-1 gap-2 px-4 py-3 text-lg font-bold transition-all duration-300 ${
+              isSignUp ? "text-blue-700" : "text-gray-500 hover:text-gray-700"
             }`}
           >
-            <FaUserPlus />
+            <FaUserPlus className="text-xl" />
             Sign Up
+            {isSignUp && (
+              <motion.span
+                layoutId="tabIndicator"
+                className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-t-lg"
+                transition={{ duration: 0.3 }}
+              ></motion.span>
+            )}
           </button>
         </div>
 
-        <div className="relative overflow-hidden h-[540px]">
-          {" "}
-          {/* Added height to ensure content is visible */}
+        {/* Form Container with Animation */}
+        <div className="relative overflow-hidden w-full">
+          {/* -------------------- SIGN UP FORM -------------------- */}
           <motion.div
-            className={`absolute inset-0 transition-transform duration-500 ${
-              isSignUp ? "translate-x-0" : "translate-x-full"
+            className={`relative transition-transform duration-500 ${
+              isSignUp
+                ? "translate-x-0"
+                : "translate-x-full opacity-0 pointer-events-none absolute inset-x-0"
             }`}
             initial={{ opacity: 0 }}
-            animate={{ opacity: isSignUp ? 1 : 0 }}
+            animate={{
+              opacity: isSignUp ? 1 : 0,
+              position: isSignUp ? "relative" : "absolute",
+            }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-2xl font-bold mb-4 text-center">Sign Up</h2>
+            <h2 className="text-3xl font-extrabold mb-6 text-center text-gray-800">
+              Create Account
+            </h2>
             <form
               onSubmit={handleSignUpSubmit}
               className="space-y-4"
@@ -182,104 +215,109 @@ function AuthPage() {
             >
               {/* Full Name */}
               <div className="flex flex-col space-y-1">
-                <label className="font-medium text-gray-700">
+                <label className="font-medium text-gray-700 text-sm">
                   Full Name <span className="text-red-500">*</span>
                 </label>
-                <div className="flex items-center border rounded-md border-gray-300 p-2 gap-3">
-                  <FaUser className="text-gray-400 mr-2" />
+                <div className={getFieldClasses("fullname")}>
+                  <FaUser className="text-gray-400" />
                   <input
                     type="text"
                     name="fullname"
-                    placeholder="Full Name"
+                    placeholder="Enter your full name"
                     required
-                    minLength={3}
-                    pattern="^[A-Za-z\s]{3,}$"
-                    title="Full name must contain only letters and spaces, at least 3 characters long."
-                    className="outline-none w-full"
+                    className="outline-none w-full bg-transparent text-gray-800 placeholder-gray-400 text-base"
+                    onChange={() => setErrors({ ...errors, fullname: "" })}
                   />
                 </div>
                 {errors.fullname && (
-                  <p className="text-red-500 text-sm">{errors.fullname}</p>
+                  <p className="text-red-500 text-sm mt-1">{errors.fullname}</p>
                 )}
               </div>
 
               {/* Email */}
               <div className="flex flex-col space-y-1">
-                <label className="font-medium text-gray-700">
+                <label className="font-medium text-gray-700 text-sm">
                   Email <span className="text-red-500">*</span>
                 </label>
-                <div className="flex items-center border rounded-md border-gray-300 p-2 gap-3">
-                  <FaUser className="text-gray-400 mr-2" />
+                <div className={getFieldClasses("email")}>
+                  <FaEnvelope className="text-gray-400" />
                   <input
                     type="email"
                     name="email"
-                    placeholder="Email"
+                    placeholder="Enter your email"
                     required
-                    pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                    title="Please enter a valid email address (e.g. user@example.com)"
-                    className="outline-none w-full"
-                    onChange={(e) => setEmail(e.target.value)}
+                    className="outline-none w-full bg-transparent text-gray-800 placeholder-gray-400 text-base"
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setErrors({ ...errors, email: "" });
+                    }}
                     value={email}
                   />
                 </div>
                 {errors.email && (
-                  <p className="text-red-500 text-sm">{errors.email}</p>
+                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
                 )}
               </div>
 
               {/* Password */}
               <div className="flex flex-col space-y-1">
-                <label className="font-medium text-gray-700">
+                <label className="font-medium text-gray-700 text-sm">
                   Password <span className="text-red-500">*</span>
                 </label>
-                <div className="flex items-center border rounded-md border-gray-300 p-2 gap-3">
-                  <FaLock className="text-gray-400 mr-2" />
+                <div className={getFieldClasses("password", true)}>
+                  <FaLock className="text-gray-400" />
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
-                    placeholder="Password"
+                    placeholder="Create a strong password"
                     required
-                    minLength={6}
-                    pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$"
-                    title="Password must be at least 6 characters long and contain both letters and numbers."
-                    className="outline-none w-full"
-                    onChange={(e) => setPassword(e.target.value)}
+                    className="outline-none w-full bg-transparent text-gray-800 placeholder-gray-400 text-base"
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setErrors({ ...errors, password: "" });
+                    }}
                     value={password}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-gray-400 ml-2"
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-red-500 text-sm">{errors.password}</p>
+                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
                 )}
               </div>
 
-              <div className="flex-col gap-y-1 text-sm">
-                <p className="text-red-500">Please Note:</p>
-                <p>Password length should be of at least 8 characters.</p>
-                <p>
-                  Password must include one at least one uppercase letter, one
-                  lowercase letter, one number, and one special character.
-                </p>
+              {/* Password Requirements Note */}
+              <div className="flex-col gap-y-1 text-xs text-gray-500 pt-1">
+                <p className="text-red-500 font-semibold mb-1">Please Note:</p>
+                <ul className="list-disc list-inside space-y-0.5 ml-2">
+                  <li>
+                    Password length should be of at least **8 characters**.
+                  </li>
+                  
+                </ul>
               </div>
-
-              {/* Submit */}
-              <button
+              
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 type="submit"
-                className="w-full bg-green-400 text-white py-2 rounded-md flex justify-center items-center"
+                // Blue/Indigo Gradient for primary CTA
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 rounded-xl flex justify-center items-center font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 mt-6"
+                disabled={loading}
               >
                 {loading ? (
-                  <Loader2 className="animate-spin text-center" />
+                  <Loader2 className="animate-spin mr-2" size={20} />
                 ) : (
                   "Register User"
                 )}
-              </button>
+              </motion.button>
 
+              {/* Backend/Server Error */}
               {signUpError && (
                 <div className="text-red-500 text-center mt-2">
                   {signUpError}
@@ -287,86 +325,101 @@ function AuthPage() {
               )}
             </form>
           </motion.div>
+
+          {/* -------------------- SIGN IN FORM -------------------- */}
           <motion.div
-            className={`absolute inset-0 transition-transform duration-500 ${
-              isSignUp ? "-translate-x-full" : "translate-x-0"
+            className={`transition-transform duration-500 ${
+              isSignUp
+                ? "-translate-x-full opacity-0 pointer-events-none absolute inset-x-0"
+                : "translate-x-0 relative"
             }`}
             initial={{ opacity: 0 }}
-            animate={{ opacity: !isSignUp ? 1 : 0 }}
+            animate={{
+              opacity: !isSignUp ? 1 : 0,
+              position: !isSignUp ? "relative" : "absolute",
+            }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-2xl font-bold mb-4 text-center">Sign In</h2>
+            <h2 className="text-3xl font-extrabold mb-6 text-center text-gray-800">
+              Sign In
+            </h2>
             <form
               onSubmit={handleSignInSubmit}
-              className="space-y-4"
+              className="space-y-6"
               noValidate
             >
               {/* Email */}
               <div className="flex flex-col space-y-1">
-                <label className="font-medium text-gray-700">
+                <label className="font-medium text-gray-700 text-sm">
                   Email <span className="text-red-500">*</span>
                 </label>
-                <div className="flex items-center border rounded-md border-gray-300 p-2 gap-3">
-                  <FaUser className="text-gray-400 mr-2" />
+                <div className={getFieldClasses("email")}>
+                  <FaEnvelope className="text-gray-400" />
                   <input
                     type="email"
                     name="email"
-                    placeholder="Email"
+                    placeholder="Enter your email"
                     required
-                    pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                    title="Please enter a valid email address (e.g., user@example.com)"
-                    className="outline-none w-full"
-                    onChange={(e) => setEmail(e.target.value)}
+                    className="outline-none w-full bg-transparent text-gray-800 placeholder-gray-400 text-base"
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setErrors({ ...errors, email: "" });
+                    }}
                     value={email}
                   />
                 </div>
                 {errors.email && (
-                  <p className="text-red-500 text-sm">{errors.email}</p>
+                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
                 )}
               </div>
 
               {/* Password */}
               <div className="flex flex-col space-y-1">
-                <label className="font-medium text-gray-700">
+                <label className="font-medium text-gray-700 text-sm">
                   Password <span className="text-red-500">*</span>
                 </label>
-                <div className="flex items-center border rounded-md border-gray-300 p-2 gap-3">
-                  <FaLock className="text-gray-400 mr-2" />
+                <div className={getFieldClasses("password", true)}>
+                  <FaLock className="text-gray-400" />
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
-                    placeholder="Password"
+                    placeholder="Enter your password"
                     required
-                    minLength={6}
-                    title="Password must be at least 6 characters long."
-                    className="outline-none w-full"
-                    onChange={(e) => setPassword(e.target.value)}
+                    className="outline-none w-full bg-transparent text-gray-800 placeholder-gray-400 text-base"
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setErrors({ ...errors, password: "" });
+                    }}
                     value={password}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-gray-400 ml-2"
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-red-500 text-sm">{errors.password}</p>
+                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
                 )}
               </div>
 
-              {/* Submit Button */}
-              <button
+              
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 type="submit"
-                className="w-full bg-green-400 text-white py-2 rounded-md flex justify-center items-center"
+                // Blue/Indigo Gradient for primary CTA
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 rounded-xl flex justify-center items-center font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 mt-8"
+                disabled={loading}
               >
                 {loading ? (
-                  <Loader2 className="animate-spin text-center" />
+                  <Loader2 className="animate-spin mr-2" size={20} />
                 ) : (
-                  "Login"
+                  "Sign In"
                 )}
-              </button>
+              </motion.button>
 
               {/* Backend/Server Error */}
               {signInError && (
@@ -378,13 +431,14 @@ function AuthPage() {
           </motion.div>
         </div>
 
-        <p className="mt-4 text-center text-gray-600">
+        {/* Toggle between Sign In/Sign Up message */}
+        <p className="mt-8 text-center text-gray-500 text-sm">
           {isSignUp ? (
             <>
               Already have an account?{" "}
               <button
                 onClick={() => setIsSignUp(false)}
-                className="text-blue-500 hover:underline"
+                className="text-blue-600 font-semibold hover:underline transition-colors"
               >
                 Sign In
               </button>
@@ -394,7 +448,7 @@ function AuthPage() {
               Don’t have an account?{" "}
               <button
                 onClick={() => setIsSignUp(true)}
-                className="text-blue-500 hover:underline"
+                className="text-blue-600 font-semibold hover:underline transition-colors"
               >
                 Sign Up
               </button>
