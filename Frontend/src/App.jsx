@@ -32,7 +32,7 @@ function App() {
   }, []);
 
   if (!user) {
-    navigate("/");
+    navigate("/home");
   }
 
   return (

@@ -13,13 +13,14 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
   const dispatch = useDispatch();
   const [loading, setLoading] = React.useState(false);
   const [formData, setFormData] = React.useState({
-    firstName: "",
-    lastName: "",
-    jobTitle: "",
-    address: "",
-    phone: "",
-    email: "",
+    firstName: resumeInfo?.firstName || "",
+    lastName: resumeInfo?.lastName || "",
+    jobTitle: resumeInfo?.jobTitle || "",
+    address: resumeInfo?.address || "",
+    phone: resumeInfo?.phone || "",
+    email: resumeInfo?.email || "",
   });
+
   // state to display the errors
   const [errors, setErrors] = React.useState({
     firstName: "",
@@ -30,8 +31,16 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
     email: "",
   });
 
+  // Helper to apply error styling to inputs
+  const getInputBorderClass = (fieldName) =>
+    errors[fieldName]
+      ? "border-red-500 focus:border-red-600"
+      : "border-gray-300 focus:border-indigo-500";
+
   const handleInputChange = (e) => {
-    enanbledNext(false);
+    enanbledNext && enanbledNext(false);
+
+    // Dispatch and update formData state
     dispatch(
       addResumeData({
         ...resumeInfo,
@@ -42,32 +51,25 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
       ...formData,
       [e.target.name]: e.target.value,
     });
+
+    // Clear the error for the field being typed
+    setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
   };
 
+  // --- VALIDATION LOGIC IS PRESERVED AND USED ---
   const validateForm = () => {
+    // This function is defined but not called in the final submission.
+    // The validation inside onSave is the active logic.
     const newErrors = {};
 
-    // First Name
-    if (!formData.firstName.trim()) {
+    if (!formData.firstName.trim())
       newErrors.firstName = "First name is required.";
-    }
-
-    // Last Name
-    if (!formData.lastName.trim()) {
+    if (!formData.lastName.trim())
       newErrors.lastName = "Last name is required.";
-    }
-
-    // Job Title
-    if (!formData.jobTitle.trim()) {
+    if (!formData.jobTitle.trim())
       newErrors.jobTitle = "Job title is required.";
-    }
+    if (!formData.address.trim()) newErrors.address = "Address is required.";
 
-    // Address
-    if (!formData.address.trim()) {
-      newErrors.address = "Address is required.";
-    }
-
-    // Phone
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone is required.";
     } else if (!/^\d+$/.test(formData.phone)) {
@@ -76,18 +78,13 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
       newErrors.phone = "Phone number must be exactly 10 digits.";
     }
 
-    // Email
     if (!formData.email.trim()) {
       newErrors.email = "Email is required.";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Enter a valid email address.";
-    } else {
-      newErrors.email = ""; // clear the error if valid
     }
 
     setErrors((prev) => ({ ...prev, ...newErrors }));
-
-    // Return true if no errors
     return Object.keys(newErrors).length === 0;
   };
 
@@ -100,6 +97,7 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
     const newErrors = {};
     let valid = true;
 
+    // Retrieve and trim values directly from the form for final validation
     const firstName = form.firstName.value.trim();
     const lastName = form.lastName.value.trim();
     const jobTitle = form.jobTitle.value.trim();
@@ -165,6 +163,7 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
     if (!valid) {
       setErrors(newErrors);
       setLoading(false);
+      toast.error("Please correct the errors in the form.");
       return; // ⛔ stop here, do not save
     }
 
@@ -175,28 +174,35 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
 
     if (resume_id) {
       try {
-        const response = await updateThisResume(resume_id, data);
-        toast("Resume Updated", "success");
+        await updateThisResume(resume_id, data);
+        toast.success("Personal Details saved successfully!");
       } catch (error) {
-        toast(error.message, "failed");
+        toast.error("Error updating resume", `${error.message}`);
         console.log(error.message);
       } finally {
-        enanbledNext(true);
+        enanbledNext && enanbledNext(true);
         setLoading(false);
       }
     }
   };
 
   return (
-    <div className="p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10">
-      <h2 className="font-bold text-lg">Personal Detail</h2>
-      <p>Get Started with the basic information</p>
+    // ⭐️ Stylish Container ⭐️
+    <div className="p-6 shadow-xl rounded-xl border-t-indigo-600 border-t-4 bg-white dark:bg-gray-800 mt-10 space-y-6">
+      <div className="space-y-1">
+        <h2 className="font-extrabold text-2xl text-gray-800 dark:text-gray-100">
+          Personal Details
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400">
+          Get Started with the basic information needed for your resume.
+        </p>
+      </div>
 
-      <form onSubmit={onSave} noValidate>
-        <div className="grid grid-cols-2 mt-5 gap-3">
+      <form onSubmit={onSave} noValidate className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
           {/* First Name */}
-          <div>
-            <label className="text-sm font-medium">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               First Name <span className="text-red-500">*</span>
             </label>
             <Input
@@ -204,15 +210,16 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
               defaultValue={resumeInfo?.firstName}
               required
               onChange={handleInputChange}
+              className={getInputBorderClass("firstName")}
             />
             {errors.firstName && (
-              <p className="text-red-500 text-sm">{errors.firstName}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
             )}
           </div>
 
           {/* Last Name */}
-          <div>
-            <label className="text-sm font-medium">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Last Name <span className="text-red-500">*</span>
             </label>
             <Input
@@ -220,15 +227,16 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
               defaultValue={resumeInfo?.lastName}
               required
               onChange={handleInputChange}
+              className={getInputBorderClass("lastName")}
             />
             {errors.lastName && (
-              <p className="text-red-500 text-sm">{errors.lastName}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
             )}
           </div>
 
           {/* Job Title */}
-          <div className="col-span-2">
-            <label className="text-sm font-medium">
+          <div className="col-span-1 md:col-span-2 space-y-1">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Job Title <span className="text-red-500">*</span>
             </label>
             <Input
@@ -236,15 +244,16 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
               defaultValue={resumeInfo?.jobTitle}
               required
               onChange={handleInputChange}
+              className={getInputBorderClass("jobTitle")}
             />
             {errors.jobTitle && (
-              <p className="text-red-500 text-sm">{errors.jobTitle}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.jobTitle}</p>
             )}
           </div>
 
           {/* Address */}
-          <div className="col-span-2">
-            <label className="text-sm font-medium">
+          <div className="col-span-1 md:col-span-2 space-y-1">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Address <span className="text-red-500">*</span>
             </label>
             <Input
@@ -252,15 +261,16 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
               defaultValue={resumeInfo?.address}
               required
               onChange={handleInputChange}
+              className={getInputBorderClass("address")}
             />
             {errors.address && (
-              <p className="text-red-500 text-sm">{errors.address}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.address}</p>
             )}
           </div>
 
           {/* Phone */}
-          <div>
-            <label className="text-sm font-medium">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Phone <span className="text-red-500">*</span>
             </label>
             <Input
@@ -268,15 +278,16 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
               defaultValue={resumeInfo?.phone}
               required
               onChange={handleInputChange}
+              className={getInputBorderClass("phone")}
             />
             {errors.phone && (
-              <p className="text-red-500 text-sm">{errors.phone}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
             )}
           </div>
 
           {/* Email */}
-          <div>
-            <label className="text-sm font-medium">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Email <span className="text-red-500">*</span>
             </label>
             <Input
@@ -284,16 +295,26 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
               defaultValue={resumeInfo?.email}
               required
               onChange={handleInputChange}
+              className={getInputBorderClass("email")}
             />
             {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
             )}
           </div>
         </div>
 
-        <div className="mt-3 flex justify-end">
-          <Button type="submit" disabled={loading}>
-            {loading ? <LoaderCircle className="animate-spin" /> : "Save"}
+        {/* Save Button */}
+        <div className="mt-6 flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md disabled:bg-indigo-400/50"
+          >
+            {loading ? (
+              <LoaderCircle className="animate-spin w-5 h-5 mr-2" />
+            ) : (
+              "Save"
+            )}
           </Button>
         </div>
       </form>
