@@ -87,8 +87,6 @@ function Education({ resumeInfo, enanbledNext }) {
       }
       if (edu.endDate) {
         const end = new Date(edu.endDate);
-        if (end > today)
-          eduErrors.endDate = "End Date cannot be in the future.";
         if (edu.startDate && new Date(edu.startDate) > end)
           eduErrors.endDate = "End Date cannot be before Start Date.";
       }

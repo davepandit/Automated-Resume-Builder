@@ -74,7 +74,7 @@ function ResumeCard({ resume, refreshData }) {
                   hover:scale-[1.03] hover:shadow-2xl overflow-hidden 
                   bg-gray-950 border border-gray-800`}
     >
-      {/* ⭐️ Top Section: Clickable Resume Area (Edit Trigger) ⭐️ */}
+      {/* ️ Top Section: Clickable Resume Area (Edit Trigger) ️ */}
       <div
         // Applies primary navigation here
         onClick={handleEditClick}
@@ -95,7 +95,7 @@ function ResumeCard({ resume, refreshData }) {
         </div>
       </div>
 
-      {/* ⭐️ Bottom Section: Action Bar (z-20 to ensure buttons are clickable) ⭐️ */}
+      {/* ️ Bottom Section: Action Bar (z-20 to ensure buttons are clickable) ️ */}
       <div
         className="absolute inset-x-0 bottom-0 flex items-center justify-around p-3 bg-white/95 rounded-b-2xl shadow-lg border-t border-gray-100 z-20 
                     dark:bg-gray-800/95 dark:border-gray-700 

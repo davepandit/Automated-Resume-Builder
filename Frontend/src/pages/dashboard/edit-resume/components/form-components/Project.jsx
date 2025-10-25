@@ -84,7 +84,7 @@ function Project({ resumeInfo, setEnabledNext, setEnabledPrev }) {
       if (!project.techStack?.trim())
         projectErrors.techStack = "Tech Stack is required.";
 
-      // ⭐️ FIXED: Rely ONLY on the cleaned text check for the summary field ⭐️
+      // ️ FIXED: Rely ONLY on the cleaned text check for the summary field ️
       const summaryText = project.projectSummary
         ?.replace(/<[^>]*>/g, "")
         .trim();
@@ -137,7 +137,7 @@ function Project({ resumeInfo, setEnabledNext, setEnabledPrev }) {
       : "border-gray-300 focus:border-indigo-500";
 
   return (
-    // ⭐️ Stylish Container ⭐️
+    // ️ Stylish Container ️
     <div className="p-6 shadow-xl rounded-xl border-t-indigo-600 border-t-4 bg-white dark:bg-gray-800 mt-10 space-y-6">
       {/* Header */}
       <div className="space-y-1">

@@ -23,7 +23,7 @@ const PROMPT = `Create a JSON object with the following fields:
 "techStack":A string representing the project tech stack
 "projectSummary": An array of strings, each representing a bullet point in html format describing relevant experience for the given project tittle and tech stack
 projectName-"{projectName}"
-techStack-"{techStack}"`;
+techStack-"{techStack}". All the points should be extremely related to entered data.`;
 
 function SimpeRichTextEditor({ index, onRichTextEditorChange, resumeInfo }) {
   const [value, setValue] = useState(
@@ -75,7 +75,7 @@ function SimpeRichTextEditor({ index, onRichTextEditorChange, resumeInfo }) {
           Summary
         </label>
 
-        {/* ⭐️ Stylish AI Button ⭐️ */}
+        {/* ️ Stylish AI Button ️ */}
         <Button
           variant="outline"
           size="sm"
@@ -98,7 +98,7 @@ function SimpeRichTextEditor({ index, onRichTextEditorChange, resumeInfo }) {
         </Button>
       </div>
 
-      {/* ⭐️ Editor Container: Clean, modern look ⭐️ */}
+      {/* ️ Editor Container: Clean, modern look ️ */}
       <EditorProvider>
         <Editor
           value={value}
@@ -123,7 +123,7 @@ function SimpeRichTextEditor({ index, onRichTextEditorChange, resumeInfo }) {
             style: { minHeight: "150px" },
           }}
         >
-          {/* ⭐️ Stylish Toolbar ⭐️ */}
+          {/* ️ Stylish Toolbar ️ */}
           <Toolbar className="bg-gray-100 dark:bg-gray-700 p-2 rounded-t-lg border-b border-gray-200 dark:border-gray-600 space-x-1">
             <BtnBold className="hover:bg-gray-200 dark:hover:bg-gray-600 rounded p-1 transition" />
             <BtnItalic className="hover:bg-gray-200 dark:hover:bg-gray-600 rounded p-1 transition" />

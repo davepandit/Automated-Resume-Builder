@@ -22,7 +22,7 @@ const PROMPT = `Create a JSON object with the following fields:
     "position_Title": A string representing the job title.
     "experience": An array of strings, each representing a bullet point describing relevant experience for the given job title in html format.
 For the Job Title "{positionTitle}", create a JSON object with the following fields:
-The experience array should contain 5-7 bullet points. Each bullet point should be a concise description of a relevant skill, responsibility, or achievement.`;
+The experience array should contain 5-7 bullet points. Each bullet point should be a concise description of a relevant skill, responsibility, or achievement and all point should be extremely related to entered data.`;
 
 function RichTextEditor({ onRichTextEditorChange, index, resumeInfo }) {
   const [value, setValue] = useState(
@@ -71,7 +71,7 @@ function RichTextEditor({ onRichTextEditorChange, index, resumeInfo }) {
           Work Summary
         </label>
 
-        {/* ⭐️ Stylish AI Button ⭐️ */}
+        {/* ️ Stylish AI Button ️ */}
         <Button
           variant="outline"
           size="sm"
@@ -94,7 +94,7 @@ function RichTextEditor({ onRichTextEditorChange, index, resumeInfo }) {
         </Button>
       </div>
 
-      {/* ⭐️ Editor Container: Clean, modern look ⭐️ */}
+      {/* ️ Editor Container: Clean, modern look ️ */}
       <EditorProvider>
         <Editor
           value={value}
@@ -119,7 +119,7 @@ function RichTextEditor({ onRichTextEditorChange, index, resumeInfo }) {
             style: { minHeight: "150px" },
           }}
         >
-          {/* ⭐️ Stylish Toolbar ⭐️ */}
+          {/* ️ Stylish Toolbar ️ */}
           <Toolbar className="bg-gray-100 dark:bg-gray-700 p-2 rounded-t-lg border-b border-gray-200 dark:border-gray-600 space-x-1">
             <BtnBold className="hover:bg-gray-200 dark:hover:bg-gray-600 rounded p-1 transition" />
             <BtnItalic className="hover:bg-gray-200 dark:hover:bg-gray-600 rounded p-1 transition" />

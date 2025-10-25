@@ -3,7 +3,7 @@ import { FaArrowRight } from "react-icons/fa"; // Imported a new icon for the bu
 
 export default function LandingPage() {
   return (
-    // ⭐️ Stylish Background: Deep, dark gradient for high contrast ⭐️
+    // ️ Stylish Background: Deep, dark gradient for high contrast ️
     <main className="min-h-screen bg-gray-950 text-white flex items-center justify-center relative overflow-hidden">
       {/* Subtle Background Accent Blob */}
       <div className="absolute top-0 left-0 w-80 h-80 bg-indigo-500/10 rounded-full filter blur-3xl animate-pulse-slow"></div>
@@ -29,7 +29,7 @@ export default function LandingPage() {
         <div className="mt-12">
           <button
             onClick={() => (window.location.href = "/home")}
-            // ⭐️ Stylish Button: Primary action color, scale/shadow on hover ⭐️
+            // ️ Stylish Button: Primary action color, scale/shadow on hover ️
             className="inline-flex items-center gap-3 px-8 py-3 rounded-xl bg-indigo-600 text-white text-lg font-bold shadow-xl 
                                 hover:bg-indigo-700 transition-all duration-300 transform hover:scale-[1.05]"
             aria-label="Go to Home"
@@ -43,7 +43,7 @@ export default function LandingPage() {
           Developed by
         </h2>
 
-        {/* ⭐️ Students List: Increased visibility (text-white) ⭐️ */}
+        {/* ️ Students List: Increased visibility (text-white) ️ */}
         <ul className="mt-3 space-y-1 text-white font-mono text-base bold">
           <li className="hover:text-cyan-400 transition">
             Student-1 Debajyoti Pandit (231IT020)
@@ -56,7 +56,7 @@ export default function LandingPage() {
           </li>
         </ul>
 
-        {/* ⭐️ Footer: Increased visibility (text-gray-300) ⭐️ */}
+        {/* ️ Footer: Increased visibility (text-gray-300) ️ */}
         <footer className="mt-24 text-sm text-gray-500 border-t border-gray-800 pt-6">
           NITK - Department of Information Technology
         </footer>

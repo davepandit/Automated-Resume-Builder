@@ -51,11 +51,11 @@ function HomePage() {
   };
 
   return (
-    // ⭐️ Main container: Dark background for the whole page ⭐️
+    // ️ Main container: Dark background for the whole page ️
     <div className="bg-gray-950 text-gray-100 min-h-screen">
       <Header user={user} />
 
-      {/* ⭐️ Hero Section: Dark background, light text ⭐️ */}
+      {/* ️ Hero Section: Dark background, light text ️ */}
       <section className="pt-32 pb-24 bg-gray-950 overflow-hidden relative">
         <div className="px-6 mx-auto max-w-7xl lg:px-8">
           <div className="w-full mx-auto text-center md:w-11/12 xl:w-9/12">
@@ -133,7 +133,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* ⭐️ Footer: Dark background, light text ⭐️ */}
+      {/* ️ Footer: Dark background, light text ️ */}
       <footer
         className="bg-gray-900 border-t border-gray-800"
         aria-labelledby="footer-heading"

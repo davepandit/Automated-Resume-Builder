@@ -25,8 +25,159 @@ function ViewResume() {
     dispatch(addResumeData(response.data));
   };
 
-  const HandleDownload = () => {
-    window.print();
+  // Improved PDF download function
+  const downloadAsPDF = async () => {
+    try {
+      // Dynamically import the libraries
+      const html2canvas = (await import("html2canvas")).default;
+      const jsPDF = (await import("jspdf")).default;
+
+      const element = document.querySelector(".print");
+      if (!element) {
+        toast.error("Resume content not found");
+        return;
+      }
+
+      // Store original styles
+      const originalWidth = element.style.width;
+      const originalHeight = element.style.height;
+      const originalOverflow = element.style.overflow;
+
+      // Set fixed dimensions for PDF generation
+      element.style.width = "210mm";
+      element.style.height = "297mm";
+      element.style.overflow = "visible";
+
+      const canvas = await html2canvas(element, {
+        scale: 3, // Higher scale for better quality
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+        width: 794, // A4 width in pixels at 96 DPI
+        height: 1123, // A4 height in pixels at 96 DPI
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: 794,
+        windowHeight: 1123,
+      });
+
+      // Restore original styles
+      element.style.width = originalWidth;
+      element.style.height = originalHeight;
+      element.style.overflow = originalOverflow;
+
+      const imgData = canvas.toDataURL("image/png", 1.0);
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      // Calculate dimensions to fit the page
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight) * 0.95; // 95% to prevent overflow
+
+      pdf.addImage(
+        imgData,
+        "PNG",
+        (pdfWidth - imgWidth * ratio) / 2,
+        (pdfHeight - imgHeight * ratio) / 2,
+        imgWidth * ratio,
+        imgHeight * ratio
+      );
+
+      pdf.save("resume.pdf");
+      toast.success("Resume downloaded as PDF successfully!");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast.error("Failed to download PDF. Please try the print option.");
+    }
+  };
+
+  // Improved Word download function
+  const downloadAsWord = () => {
+    try {
+      const element = document.querySelector(".print");
+      if (!element) {
+        toast.error("Resume content not found");
+        return;
+      }
+
+      // Clone the element to avoid modifying the original
+      const clone = element.cloneNode(true);
+
+      // Remove any buttons or interactive elements that might be in the preview
+      const buttons = clone.querySelectorAll("button, a, .no-print");
+      buttons.forEach((btn) => btn.remove());
+
+      // Get clean HTML content
+      const htmlContent = clone.innerHTML;
+
+      // Create a proper Word document with styles
+      const header = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" 
+              xmlns:w="urn:schemas-microsoft-com:office:word" 
+              xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta charset="UTF-8">
+          <title>Resume</title>
+          <style>
+            body { 
+              font-family: Arial, sans-serif; 
+              margin: 0; 
+              padding: 20px; 
+              line-height: 1.4;
+            }
+            .print { 
+              width: 100%; 
+              max-width: 800px; 
+              margin: 0 auto; 
+            }
+            * { 
+              box-sizing: border-box; 
+            }
+            @page {
+              margin: 0.5in;
+            }
+          </style>
+        </head>
+        <body>
+      `;
+
+      const footer = `
+        </body>
+        </html>
+      `;
+
+      const sourceHTML = header + htmlContent + footer;
+
+      // Create Blob and download
+      const blob = new Blob([sourceHTML], {
+        type: "application/msword",
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "resume.doc";
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+
+      toast.success("Resume downloaded as Word document successfully!");
+    } catch (error) {
+      console.error("Error generating Word document:", error);
+      toast.error("Failed to download Word document. Please try PDF download.");
+    }
   };
   return (
     <>
@@ -40,21 +191,12 @@ function ViewResume() {
               Now you are ready to download your resume and you can share unique
               resume url with recruiters{" "}
             </p>
-            <div className="flex justify-between px-44 my-10">
-              <Button onClick={HandleDownload}>Download</Button>
-              <RWebShare
-                data={{
-                  text: "Hello This is My resume",
-                  url:
-                    import.meta.env.VITE_BASE_URL +
-                    "/dashboard/view-resume/" +
-                    resume_id,
-                  title: "Flamingos",
-                }}
-                onClick={() => toast("Resume Shared Successfully")}
-              >
-                <Button>Share</Button>
-              </RWebShare>
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 my-10 px-4 md:px-44">
+              <div className="flex flex-wrap justify-center gap-2">
+                {/* <Button onClick={HandleDownload}>Download PDF (Print)</Button> */}
+                <Button onClick={downloadAsPDF}>Download as PDF</Button>
+                <Button onClick={downloadAsWord}>Download as Word</Button>
+              </div>
             </div>
           </div>
         </div>

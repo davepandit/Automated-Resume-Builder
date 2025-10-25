@@ -105,7 +105,7 @@ function Skills({ resumeInfo, enanbledNext }) {
       updateThisResume(resume_id, data)
         .then(() => {
           toast.success("Skills updated successfully!");
-          // ⭐️ Re-enable navigation buttons ⭐️
+          // ️ Re-enable navigation buttons ️
           enanbledNext && enanbledNext(true);
         })
         .catch((error) => {
@@ -129,7 +129,7 @@ function Skills({ resumeInfo, enanbledNext }) {
       : "border-gray-300 focus:border-indigo-500";
 
   return (
-    // ⭐️ Stylish Container ⭐️
+    // ️ Stylish Container ️
     <div className="p-6 shadow-xl rounded-xl border-t-indigo-600 border-t-4 bg-white dark:bg-gray-800 mt-10 space-y-6">
       {/* Header */}
       <div className="space-y-1">
@@ -215,7 +215,7 @@ function Skills({ resumeInfo, enanbledNext }) {
             )}
           </Button>
 
-          {/* ⭐️ FINISH BUTTON ⭐️ */}
+          {/* ️ FINISH BUTTON ️ */}
           <Button
             onClick={handleFinish}
             // Use a secondary, but still professional, style
