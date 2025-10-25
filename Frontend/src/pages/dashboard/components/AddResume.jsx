@@ -10,36 +10,70 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createNewResume } from "@/Services/resumeAPI";
+import { createNewResume, saveTemplateChoice } from "@/Services/resumeAPI";
 import { useNavigate } from "react-router-dom";
+import TemplateSelectionModal from "./TemplateSelectionModal";
 
 function AddResume() {
   const [isDialogOpen, setOpenDialog] = useState(false);
   const [resumetitle, setResumetitle] = useState("");
   const [loading, setLoading] = useState(false);
+  // state for the modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // state to choose the template
+  const [template, setTemplate] = useState("first-template");
+  const [newResumeId, setNewResumeId] = useState(null);
   const Navigate = useNavigate();
 
   const createResume = async () => {
     setLoading(true);
-    if (resumetitle === "")
+    if (resumetitle === "") {
+      setLoading(false);
       return console.log("Please add a title to your resume");
+    }
     const data = {
       data: {
         title: resumetitle,
         themeColor: "#1e1d64ff",
       },
     };
-    console.log(`Creating Resume ${resumetitle}`);
-    createNewResume(data)
-      .then((res) => {
-        console.log("Prinitng From AddResume Respnse of Create Resume", res);
-        Navigate(`/dashboard/edit-resume/${res.data.resume._id}`);
-      })
-      .finally(() => {
-        setLoading(false);
-        setResumetitle("");
-      });
+
+    try {
+      const res = await createNewResume(data);
+      console.log("Resume Created. ID:", res.data.resume._id);
+
+      // 1. Store the new ID
+      setNewResumeId(res.data.resume._id);
+      // close the resume title modal
+      setOpenDialog(false);
+
+      // 2. Open the modal
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Error creating resume:", error);
+    } finally {
+      setLoading(false);
+      setResumetitle("");
+    }
   };
+
+  // New function to handle the final action from the modal
+  const handleFinalTemplateSelection = async () => {
+    if (newResumeId && template) {
+      // 1. Close the modal
+      setIsModalOpen(false);
+
+      // make a call to the database saving the template choice of the user
+      const res = await saveTemplateChoice(template, newResumeId);
+
+      // 2. Navigate with the stored ID and the selected template
+      Navigate(`/dashboard/edit-resume/${newResumeId}?template=${template}`);
+
+      // Reset the ID for next time
+      setNewResumeId(null);
+    }
+  };
+
   return (
     <>
       <div
@@ -77,6 +111,20 @@ function AddResume() {
           </DialogHeader>
         </DialogContent>
       </Dialog>
+
+      <TemplateSelectionModal
+        isOpen={isModalOpen}
+        // When canceling, just close the modal and reset the ID
+        onClose={() => {
+          setIsModalOpen(false);
+          setNewResumeId(null); // Optional: clear the ID if the user cancels
+        }}
+        // When a card is clicked, update the template state
+        onSelectTemplate={setTemplate}
+        selectedTemplate={template}
+        // This is the function that navigates after a template is confirmed
+        onConfirm={handleFinalTemplateSelection}
+      />
     </>
   );
 }

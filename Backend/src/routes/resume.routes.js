@@ -6,6 +6,7 @@ import {
   getResume,
   updateResume,
   removeResume,
+  saveTemplate
 } from "../controller/resume.controller.js";
 import { isUserAvailable } from "../middleware/auth.js";
 
@@ -13,6 +14,8 @@ const router = Router();
 
 router.get("/", start);
 router.post("/createResume", isUserAvailable, createResume);
+// save the template to the database 
+router.post("/saveTemplate", isUserAvailable, saveTemplate);
 router.get("/getAllResume", isUserAvailable, getALLResume);
 router.get("/getResume", isUserAvailable, getResume);
 router.put("/updateResume", isUserAvailable, updateResume);

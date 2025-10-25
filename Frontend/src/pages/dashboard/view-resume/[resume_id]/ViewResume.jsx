@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { getResumeData } from "@/Services/resumeAPI";
 import ResumePreview from "../../edit-resume/components/PreviewPage";
@@ -11,6 +11,9 @@ import { toast } from "sonner";
 function ViewResume() {
   const [resumeInfo, setResumeInfo] = React.useState({});
   const { resume_id } = useParams();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const template = query.get("template");
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -42,7 +45,10 @@ function ViewResume() {
               <RWebShare
                 data={{
                   text: "Hello This is My resume",
-                  url: import.meta.env.VITE_BASE_URL + "/dashboard/view-resume/" + resume_id,
+                  url:
+                    import.meta.env.VITE_BASE_URL +
+                    "/dashboard/view-resume/" +
+                    resume_id,
                   title: "Flamingos",
                 }}
                 onClick={() => toast("Resume Shared Successfully")}
@@ -57,7 +63,7 @@ function ViewResume() {
           style={{ width: "210mm", height: "297mm" }}
         >
           <div className="print">
-            <ResumePreview />
+            <ResumePreview template={template} />
           </div>
         </div>
       </div>

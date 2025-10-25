@@ -164,7 +164,7 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
       setErrors(newErrors);
       setLoading(false);
       toast.error("Please correct the errors in the form.");
-      return; // ⛔ stop here, do not save
+      return; // stop here, do not save
     }
 
     // --- If valid, proceed to save ---

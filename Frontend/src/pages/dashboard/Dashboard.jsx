@@ -28,7 +28,7 @@ function Dashboard() {
   return (
     <div className="p-10 md:px-20 lg:px-32">
       <h2 className="font-bold text-3xl">My Resume</h2>
-      <p className="py-3"> Start creating your Ai resume for next Job role</p>
+      <p className="py-3"> Start creating your resume for dream job role</p>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 grid-cols-1 mt-5 gap-4">
         <AddResume />
         {resumeList.length > 0 &&

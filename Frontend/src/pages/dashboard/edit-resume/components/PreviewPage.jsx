@@ -1,14 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import PersonalDeatailPreview from "./preview-components/PersonalDeatailPreview";
-import SummeryPreview from "./preview-components/SummaryPreview";
-import ExperiencePreview from "./preview-components/ExperiencePreview";
-import EducationalPreview from "./preview-components/EducationalPreview";
-import SkillsPreview from "./preview-components/SkillsPreview";
-import ProjectPreview from "./preview-components/ProjectPreview";
+import FirstTemplate from "./Templates/FirstTemplate";
+import SecondTemplate from "./Templates/SecondTemplate";
+import ThirdTemplate from "./Templates/ThirdTemplate";
+import FourthTemplate from "./Templates/FourthTemplate";
 
-function PreviewPage() {
+function PreviewPage({ template }) {
   const resumeData = useSelector((state) => state.editResume.resumeData);
+
   useEffect(() => {
     console.log("PreviewPage rendered ");
   }, [resumeData]);
@@ -19,13 +18,16 @@ function PreviewPage() {
         borderColor: resumeData?.themeColor ? resumeData.themeColor : "#000000",
       }}
     >
-      <PersonalDeatailPreview resumeInfo={resumeData} />
-      {}
-      <SummeryPreview resumeInfo={resumeData} />
-      {resumeData?.experience && <ExperiencePreview resumeInfo={resumeData} />}
-      {resumeData?.projects && <ProjectPreview resumeInfo={resumeData} />}
-      {resumeData?.education && <EducationalPreview resumeInfo={resumeData} />}
-      {resumeData?.skills && <SkillsPreview resumeInfo={resumeData} />}
+      {/* dynamically render the template based on what the user has chosen  */}
+      {template === "first-template" ? (
+        <FirstTemplate />
+      ) : template === "second-template" ? (
+        <SecondTemplate />
+      ) : template === "third-template" ? (
+        <ThirdTemplate />
+      ) : (
+        <FourthTemplate />
+      )}
     </div>
   );
 }

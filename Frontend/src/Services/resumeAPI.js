@@ -1,5 +1,6 @@
 import axios from "axios";
 import { VITE_APP_URL } from "@/config/config";
+// import { data } from "autoprefixer";
 
 const axiosInstance = axios.create({
   baseURL: VITE_APP_URL + "api/",
@@ -18,6 +19,20 @@ const createNewResume = async (data) => {
     return response.data;
   } catch (error) {
     // console.log("Eroor in getting all the resumes ",error);
+    throw new Error(
+      error?.response?.data?.message || error?.message || "Something Went Wrong"
+    );
+  }
+};
+
+// save the template choice to the database
+const saveTemplateChoice = async (data, resumeID) => {
+  try {
+    console.log("data:", data);
+    const response = await axiosInstance.post(
+      `resumes/saveTemplate?id=${resumeID}&template=${data}`
+    );
+  } catch (error) {
     throw new Error(
       error?.response?.data?.message || error?.message || "Something Went Wrong"
     );
@@ -82,4 +97,5 @@ export {
   getResumeData,
   updateThisResume,
   createNewResume,
+  saveTemplateChoice,
 };

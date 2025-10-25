@@ -99,6 +99,24 @@ const getResume = async (req, res) => {
   }
 };
 
+// save template option to the database
+const saveTemplate = async (req, res) => {
+  try {
+    const { id, template } = req.query;
+
+    if (!id || !template) {
+      return res.status(400).json({ message: "Missing id or template" });
+    }
+
+    await Resume.findByIdAndUpdate(id, { template }, { new: true });
+
+    return res.json({ message: "Template option saved successfully!" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 const updateResume = async (req, res) => {
   console.log("Resume update request received:");
   const id = req.query.id;
@@ -176,4 +194,5 @@ export {
   getResume,
   updateResume,
   removeResume,
+  saveTemplate,
 };

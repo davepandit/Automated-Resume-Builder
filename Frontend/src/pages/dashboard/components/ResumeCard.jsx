@@ -37,7 +37,9 @@ function ResumeCard({ resume, refreshData }) {
 
   // Primary action for clicking the card body
   const handleEditClick = () => {
-    navigate(`/dashboard/edit-resume/${resume._id}`);
+    navigate(
+      `/dashboard/edit-resume/${resume._id}?template=${resume.template}`
+    );
   };
 
   const handleDelete = async () => {
@@ -106,7 +108,9 @@ function ResumeCard({ resume, refreshData }) {
           // FIX 1: Stop propagation so only this button's navigate runs, not the card's
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/dashboard/view-resume/${resume._id}`);
+            navigate(
+              `/dashboard/view-resume/${resume._id}?template=${resume.template}`
+            );
           }}
           className="p-2 w-1/3 transition duration-300 ease-in-out hover:bg-indigo-50/50 dark:hover:bg-gray-700"
         >
@@ -120,7 +124,9 @@ function ResumeCard({ resume, refreshData }) {
           // FIX 2: Stop propagation so only this button's navigate runs, not the card's
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/dashboard/edit-resume/${resume._id}`);
+            navigate(
+              `/dashboard/edit-resume/${resume._id}?template=${resume.template}`
+            );
           }}
           className="p-2 w-1/3 transition duration-300 ease-in-out hover:bg-purple-50/50 dark:hover:bg-gray-700"
         >

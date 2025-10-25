@@ -41,6 +41,16 @@ const resumeSchema = new mongoose.Schema({
     },
   ],
   themeColor: { type: String, required: true },
+  template: {
+    type: String,
+    enum: [
+      "first-template",
+      "second-template",
+      "third-template",
+      "fourth-template",
+    ],
+    default: "first-template",
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
