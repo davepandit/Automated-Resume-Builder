@@ -4,6 +4,7 @@ import App from "./App.jsx";
 import "./index.css";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import HomePage from "./pages/home/HomePage.jsx";
+import LandingPage from "./pages/home/LandingPage.jsx";
 import Dashboard from "./pages/dashboard/Dashboard.jsx";
 import { EditResume } from "./pages/dashboard/edit-resume/[resume_id]/EditResume.jsx";
 import ViewResume from "./pages/dashboard/view-resume/[resume_id]/ViewResume.jsx";
@@ -30,8 +31,12 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/",
+    path: "/home",
     element: <HomePage />,
+  },
+  {
+    path: "/",
+    element: <LandingPage />,
   },
   {
     path: "/auth/sign-in",

@@ -16,33 +16,43 @@ const formFields = {
 };
 
 function Project({ resumeInfo, setEnabledNext, setEnabledPrev }) {
-  const [projectList, setProjectList] = useState(resumeInfo?.projects || []);
+  const [projectList, setProjectList] = useState(
+    resumeInfo?.projects && resumeInfo.projects.length > 0
+      ? resumeInfo.projects
+      : [{ ...formFields }]
+  );
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState([]);
+  const [errors, setErrors] = useState(projectList.map(() => ({})));
   const { resume_id } = useParams();
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(addResumeData({ ...resumeInfo, projects: projectList }));
-  }, [projectList]);
+    if (errors.length === 0 && projectList.length > 0) {
+      setErrors(projectList.map(() => ({})));
+    }
+  }, [projectList, dispatch]);
 
   const addProject = () => {
-    setProjectList([...projectList, formFields]);
-    setErrors([...errors, {}]); // Add empty error object for new project
+    setProjectList([...projectList, { ...formFields }]);
+    setErrors([...errors, {}]);
   };
 
   const removeProject = (index) => {
-    const list = [...projectList];
-    const newList = list.filter((_, i) => i !== index);
+    if (projectList.length <= 1) {
+      toast.warning("At least one project entry is required.");
+      return;
+    }
+    const newList = projectList.filter((_, i) => i !== index);
     setProjectList(newList);
 
-    const newErrors = [...errors].filter((_, i) => i !== index);
+    const newErrors = errors.filter((_, i) => i !== index);
     setErrors(newErrors);
   };
 
   const handleChange = (e, index) => {
-    setEnabledNext(false);
-    setEnabledPrev(false);
+    setEnabledNext && setEnabledNext(false);
+    setEnabledPrev && setEnabledPrev(false);
     const { name, value } = e.target;
     const list = [...projectList];
     list[index] = { ...list[index], [name]: value };
@@ -66,12 +76,22 @@ function Project({ resumeInfo, setEnabledNext, setEnabledPrev }) {
   const validateProjects = () => {
     const newErrors = projectList.map((project) => {
       const projectErrors = {};
+
+      // Check Project Name and Tech Stack existence
       if (!project.projectName?.trim())
         projectErrors.projectName = "Project Name is required.";
+
       if (!project.techStack?.trim())
         projectErrors.techStack = "Tech Stack is required.";
-      if (!project.projectSummary?.trim())
-        projectErrors.projectSummary = "Project Summary is required.";
+
+      // ⭐️ FIXED: Rely ONLY on the cleaned text check for the summary field ⭐️
+      const summaryText = project.projectSummary
+        ?.replace(/<[^>]*>/g, "")
+        .trim();
+      if (!summaryText || summaryText.length < 5)
+        projectErrors.projectSummary =
+          "Project Summary is required (min 5 characters).";
+
       return projectErrors;
     });
 
@@ -80,44 +100,77 @@ function Project({ resumeInfo, setEnabledNext, setEnabledPrev }) {
   };
 
   const onSave = () => {
-    if (!validateProjects()) return; // Stop save if validation fails
+    if (!validateProjects()) {
+      toast.error("Please fill all required project fields correctly.");
+      setEnabledNext && setEnabledNext(true);
+      setEnabledPrev && setEnabledPrev(true);
+      return;
+    }
 
     setLoading(true);
     const data = { data: { projects: projectList } };
+
     if (resume_id) {
       console.log("Started Updating Project");
       updateThisResume(resume_id, data)
-        .then(() => toast("Resume Updated", "success"))
-        .catch((error) => toast("Error updating resume", `${error.message}`))
+        .then(() => toast.success("Project details saved successfully!"))
+        .catch((error) =>
+          toast.error("Error updating resume", `${error.message}`)
+        )
         .finally(() => {
-          setEnabledNext(true);
-          setEnabledPrev(true);
+          setEnabledNext && setEnabledNext(true);
+          setEnabledPrev && setEnabledPrev(true);
           setLoading(false);
         });
+    } else {
+      setEnabledNext && setEnabledNext(true);
+      setEnabledPrev && setEnabledPrev(true);
+      setLoading(false);
+      toast.warning("Cannot save: Resume ID is missing.");
     }
   };
 
+  // Helper to apply error styling to inputs
+  const getInputBorderClass = (fieldError) =>
+    fieldError
+      ? "border-red-500 focus:border-red-600"
+      : "border-gray-300 focus:border-indigo-500";
+
   return (
-    <div className="p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10">
-      <h2 className="font-bold text-lg">Project</h2>
-      <p>Add your projects</p>
+    // ⭐️ Stylish Container ⭐️
+    <div className="p-6 shadow-xl rounded-xl border-t-indigo-600 border-t-4 bg-white dark:bg-gray-800 mt-10 space-y-6">
+      {/* Header */}
+      <div className="space-y-1">
+        <h2 className="font-extrabold text-2xl text-gray-800 dark:text-gray-100">
+          Projects
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400">
+          Showcase your best personal or professional projects.
+        </p>
+      </div>
+
+      {/* Project List */}
       <div>
         {projectList?.map((project, index) => (
           <div key={index}>
-            <div className="flex justify-between my-2">
-              <h3 className="font-bold text-lg">Project {index + 1}</h3>
+            <div className="flex justify-between items-center my-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <h3 className="font-bold text-xl text-indigo-600 dark:text-indigo-400">
+                Project {index + 1}
+              </h3>
               <Button
                 variant="outline"
-                className="text-red-500"
+                className="text-red-600 border-red-600 hover:bg-red-50 dark:text-red-400 dark:border-red-400 dark:hover:bg-gray-700 transition duration-200"
                 onClick={() => removeProject(index)}
+                size="sm"
               >
-                <Trash2 />
+                <Trash2 className="w-4 h-4 mr-2" /> Remove
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-3 border p-3 my-5 rounded-lg">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
               {/* Project Name */}
-              <div>
-                <label className="text-xs font-medium">
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Project Name <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -125,17 +178,18 @@ function Project({ resumeInfo, setEnabledNext, setEnabledPrev }) {
                   name="projectName"
                   value={project?.projectName}
                   onChange={(e) => handleChange(e, index)}
+                  className={getInputBorderClass(errors[index]?.projectName)}
                 />
                 {errors[index]?.projectName && (
-                  <p className="text-red-500 text-xs">
+                  <p className="text-red-500 text-xs mt-1">
                     {errors[index].projectName}
                   </p>
                 )}
               </div>
 
               {/* Tech Stack */}
-              <div>
-                <label className="text-xs font-medium">
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Tech Stack <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -144,29 +198,30 @@ function Project({ resumeInfo, setEnabledNext, setEnabledPrev }) {
                   value={project?.techStack}
                   placeholder="React, Node.js, Express, MongoDB"
                   onChange={(e) => handleChange(e, index)}
+                  className={getInputBorderClass(errors[index]?.techStack)}
                 />
                 {errors[index]?.techStack && (
-                  <p className="text-red-500 text-xs">
+                  <p className="text-red-500 text-xs mt-1">
                     {errors[index].techStack}
                   </p>
                 )}
               </div>
 
               {/* Project Summary */}
-              <div className="col-span-2">
-                <label className="text-xs font-medium">
+              <div className="col-span-2 space-y-1">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Project Summary <span className="text-red-500">*</span>
                 </label>
                 <SimpeRichTextEditor
                   index={index}
-                  defaultValue={project?.projectSummary}
-                  onRichTextEditorChange={(event) =>
-                    handleRichTextEditor(event, "projectSummary", index)
-                  }
                   resumeInfo={resumeInfo}
+                  defaultValue={project?.projectSummary}
+                  onRichTextEditorChange={(value) =>
+                    handleRichTextEditor(value, "projectSummary", index)
+                  }
                 />
                 {errors[index]?.projectSummary && (
-                  <p className="text-red-500 text-xs">
+                  <p className="text-red-500 text-xs mt-1">
                     {errors[index].projectSummary}
                   </p>
                 )}
@@ -176,12 +231,31 @@ function Project({ resumeInfo, setEnabledNext, setEnabledPrev }) {
         ))}
       </div>
 
-      <div className="flex justify-between py-2">
-        <Button onClick={addProject} variant="outline" className="text-primary">
-          + Add {projectList?.length > 0 ? "more" : null} project
-        </Button>
-        <Button onClick={onSave}>
-          {loading ? <LoaderCircle className="animate-spin" /> : "Save"}
+      {/* Action Buttons (Footer) */}
+      <div className="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-6">
+        <div className="flex gap-3">
+          {/* Add Project Button */}
+          <Button
+            variant="outline"
+            onClick={addProject}
+            className="text-indigo-600 border-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:border-indigo-400 dark:hover:bg-gray-700 transition duration-200"
+          >
+            + Add Project
+          </Button>
+        </div>
+
+        {/* save button */}
+        <Button
+          disabled={loading}
+          onClick={onSave}
+          // primary indigo button
+          className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md disabled:bg-indigo-400/50"
+        >
+          {loading ? (
+            <LoaderCircle className="animate-spin w-5 h-5 mr-2" />
+          ) : (
+            "Save"
+          )}
         </Button>
       </div>
     </div>

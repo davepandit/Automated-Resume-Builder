@@ -26,7 +26,7 @@ function AddResume() {
     const data = {
       data: {
         title: resumetitle,
-        themeColor: "#000000",
+        themeColor: "#1e1d64ff",
       },
     };
     console.log(`Creating Resume ${resumetitle}`);
@@ -68,7 +68,7 @@ function AddResume() {
               </Button>
               <Button onClick={createResume} disabled={!resumetitle || loading}>
                 {loading ? (
-                  <Loader className=" animate-spin" />
+                  <Loader className="color blue animate-spin" />
                 ) : (
                   "Create Resume"
                 )}

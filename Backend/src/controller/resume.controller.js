@@ -11,7 +11,7 @@ const start = async (req, res) => {
 const createResume = async (req, res) => {
   const { title, themeColor } = req.body;
 
-  // Validate that the title and themeColor are provided
+  // validate that the title and themeColor are provided
   if (!title || !themeColor) {
     return res
       .status(400)
@@ -19,11 +19,11 @@ const createResume = async (req, res) => {
   }
 
   try {
-    // Create a new resume with empty fields for other attributes
+    // create a new resume with empty fields for other attributes
     const resume = await Resume.create({
       title,
       themeColor,
-      user: req.user._id, // Set the user ID from the authenticated user
+      user: req.user._id, // set the user ID from the authenticated user
       firstName: "",
       lastName: "",
       email: "",
@@ -32,7 +32,7 @@ const createResume = async (req, res) => {
       phone: "",
       address: "",
       experience: [],
-      education: [], // Initialize as an empty array
+      education: [], // initialize as an empty array
       skills: [],
       projects: [],
     });
@@ -72,14 +72,14 @@ const getResume = async (req, res) => {
       return res.status(400).json(new ApiError(400, "Resume ID is required."));
     }
 
-    // Find the resume by ID
+    // find the resume by ID
     const resume = await Resume.findById(id);
 
     if (!resume) {
       return res.status(404).json(new ApiError(404, "Resume not found."));
     }
 
-    // Check if the resume belongs to the current user
+    // check if the resume belongs to the current user
     if (resume.user.toString() !== req.user._id.toString()) {
       return res
         .status(403)
@@ -104,12 +104,12 @@ const updateResume = async (req, res) => {
   const id = req.query.id;
 
   try {
-    // Find and update the resume with the provided ID and user ID
+    // find and update the resume with the provided ID and user ID
     console.log("Database update request started");
     const updatedResume = await Resume.findOneAndUpdate(
       { _id: id, user: req.user._id },
-      { $set: req.body, $currentDate: { updatedAt: true } }, // Set updatedAt to current date
-      { new: true } // Return the modified document
+      { $set: req.body, $currentDate: { updatedAt: true } }, // set updatedAt to current date
+      { new: true } // return the modified document
     );
 
     if (!updatedResume) {
@@ -140,7 +140,7 @@ const removeResume = async (req, res) => {
   const id = req.query.id;
 
   try {
-    // Check if the resume exists and belongs to the current user
+    // check if the resume exists and belongs to the current user
     const resume = await Resume.findOneAndDelete({
       _id: id,
       user: req.user._id,

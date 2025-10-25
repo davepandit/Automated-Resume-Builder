@@ -118,7 +118,7 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
 
   return (
     <div>
-      <div className="p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10">
+      <div className="p-6 shadow-xl rounded-xl border-t-indigo-600 border-t-4 bg-white dark:bg-gray-800 mt-10 space-y-6">
         <h2 className="font-bold text-lg">Experience</h2>
         <p>Add Your Previous Job Experience</p>
         <div>
@@ -135,7 +135,7 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
                 </Button>
               </div>
               <div className="grid grid-cols-2 gap-3 border p-3 my-5 rounded-lg">
-                {/* Position Title */}
+                {/* position title */}
                 <div>
                   <label className="text-xs font-medium">
                     Position Title <span className="text-red-500">*</span>
@@ -153,7 +153,7 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
                   )}
                 </div>
 
-                {/* Company Name */}
+                {/* company name */}
                 <div>
                   <label className="text-xs font-medium">
                     Company Name <span className="text-red-500">*</span>
@@ -171,7 +171,7 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
                   )}
                 </div>
 
-                {/* City */}
+                {/* city */}
                 <div>
                   <label className="text-xs font-medium">
                     City <span className="text-red-500">*</span>
@@ -187,7 +187,7 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
                   )}
                 </div>
 
-                {/* State */}
+                {/* state */}
                 <div>
                   <label className="text-xs font-medium">
                     State <span className="text-red-500">*</span>
@@ -205,7 +205,7 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
                   )}
                 </div>
 
-                {/* Start Date */}
+                {/* start date */}
                 <div>
                   <label className="text-xs font-medium">
                     Start Date <span className="text-red-500">*</span>
@@ -224,7 +224,7 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
                   )}
                 </div>
 
-                {/* End Date */}
+                {/* end date */}
                 <div>
                   <label className="text-xs font-medium">
                     End Date <span className="text-red-500">*</span>
@@ -243,7 +243,7 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
                   )}
                 </div>
 
-                {/* Work Summary */}
+                {/* work summary */}
                 <div className="col-span-2">
                   <label className="text-xs font-medium">
                     Work Summary <span className="text-red-500">*</span>
@@ -271,12 +271,15 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
           <Button
             onClick={addExperience}
             variant="outline"
-            className="text-primary"
+            className="text-indigo-600 border-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:border-indigo-400 dark:hover:bg-gray-700 transition duration-200"
           >
             + Add {resumeInfo?.experience?.length > 0 ? "more" : null}{" "}
             Experience
           </Button>
-          <Button onClick={onSave}>
+          <Button
+            onClick={onSave}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md disabled:bg-indigo-400/50"
+          >
             {loading ? <LoaderCircle className="animate-spin" /> : "Save"}
           </Button>
         </div>

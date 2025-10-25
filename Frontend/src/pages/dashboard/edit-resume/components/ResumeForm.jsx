@@ -39,17 +39,17 @@ function ResumeForm() {
       <div className="flex justify-between">
         <div className="flex gap-2 items-center">
           <Link to="/dashboard">
-            <Button>
+            <Button className="bg-indigo-600 hover:bg-indigo-700">
               <HomeIcon />
             </Button>
           </Link>
-          <ThemeColor resumeInfo={resumeInfo}/> 
+          <ThemeColor resumeInfo={resumeInfo} />
         </div>
         <div className="flex items-center gap-3">
           {currentIndex > 0 && (
             <Button
               size="sm"
-              className="text-sm gap-2"
+              className="text-sm gap-2 bg-indigo-600 hover:bg-indigo-700"
               disabled={!enanbledPrev}
               onClick={() => {
                 if (currentIndex === 0) return;
@@ -62,7 +62,7 @@ function ResumeForm() {
           {currentIndex < 5 && (
             <Button
               size="sm"
-              className="gap-2"
+              className="gap-2 bg-indigo-600 hover:bg-indigo-700"
               disabled={!enanbledNext}
               onClick={() => {
                 if (currentIndex >= 5) return;
