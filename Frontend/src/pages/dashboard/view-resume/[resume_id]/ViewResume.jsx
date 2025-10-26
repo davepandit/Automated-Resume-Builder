@@ -185,11 +185,10 @@ function ViewResume() {
         <div id="noPrint">
           <div className="my-10 mx-10 md:mx-20 lg:mx-36">
             <h2 className="text-center text-2xl font-medium">
-              Congrats! Your Ultimate AI generated Resume is ready !{" "}
+              Congrats! Your Ultimate Automated Resume is ready !{" "}
             </h2>
             <p className="text-center text-gray-400">
-              Now you are ready to download your resume and you can share unique
-              resume url with recruiters{" "}
+              Now you are ready to download your resume{" "}
             </p>
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 my-10 px-4 md:px-44">
               <div className="flex flex-wrap justify-center gap-2">
