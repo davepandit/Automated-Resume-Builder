@@ -70,8 +70,7 @@ function HomePage() {
 
             {/* Sub-heading/Tagline: Lighter gray for readability */}
             <p className="px-0 mb-10 text-xl text-gray-300 md:text-2xl lg:px-24">
-              Build. Refine. Shine. Your path to a better job starts with
-              **AI-Driven Resumes**.
+              
             </p>
 
             {/* Call to Action Buttons: Dark-friendly variants */}
@@ -139,8 +138,8 @@ function HomePage() {
         aria-labelledby="footer-heading"
       >
         <div className="mx-auto max-w-7xl px-6 py-6 flex flex-col sm:flex-row justify-between items-center">
-          <p className="text-sm leading-6 text-gray-400 order-2 sm:order-1 mt-4 sm:mt-0">
-            &copy; {new Date().getFullYear()} Automated-Resume-Builder.
+           <p className="text-sm leading-6 text-gray-400 order-2 sm:order-1 mt-4 sm:mt-0">
+             Automated-Resume-Builder.
           </p>
           <div className="order-1 sm:order-2">
             <Button

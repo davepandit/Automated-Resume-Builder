@@ -165,16 +165,28 @@ function Skills({ resumeInfo, enanbledNext }) {
             </div>
 
             {/* Rating Component */}
-            <div className="flex flex-col items-start sm:items-center w-full sm:w-auto mt-2 sm:mt-0">
+            <div className="flex flex-col items-start sm:items-center w-full sm:w-auto mt-2 sm:mt-0 space-y-2">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 sm:hidden">
-                Proficiency
+                Proficiency Level
               </label>
-              <Rating
-                className="[&>div>svg]:!fill-indigo-500 [&>div>svg]:!w-6 [&>div>svg]:!h-6"
-                style={{ maxWidth: 120 }}
-                value={item.rating}
-                onChange={(v) => handleChange(index, "rating", v)}
-              />
+              <div className="relative group">
+                <Rating
+                  className="[&>div>svg.empty]:!fill-gray-200
+                 [&>div>svg.filled]:!fill-indigo-500
+                 hover:[&>div>svg]:!fill-violet-500
+                 [&>div>svg]:!w-7 [&>div>svg]:!h-7 
+                 [&>div>svg]:transition-all [&>div>svg]:duration-200
+                 [&>div>svg]:drop-shadow-sm hover:[&>div>svg]:scale-105
+                 [&>div]:gap-1.5
+                 data-[focus=true]:[&>div>svg]:!fill-blue-600"
+                  style={{ maxWidth: 140 }}
+                  value={item.rating}
+                  onChange={(v) => handleChange(index, "rating", v)}
+                />
+                <span className="absolute -bottom-5 left-0 text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {item.rating} / 5
+                </span>
+              </div>
             </div>
           </div>
         ))}
