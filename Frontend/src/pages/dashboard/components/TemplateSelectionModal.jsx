@@ -1,26 +1,25 @@
 import React from "react";
 
-// Define the structure for your templates
 const templateOptions = [
   {
     id: "first-template",
     name: "first-template",
-    image: "/heroSnapshot.png", // Replace with your actual image path
+    image: "/FirstTemplateThumbnail.png",
   },
   {
     id: "second-template",
     name: "second-template",
-    image: "/heroSnapshot.png", // Replace with your actual image path
+    image: "/SecondTemplateThumbnail.png",
   },
   {
     id: "third-template",
     name: "third-template",
-    image: "/heroSnapshot.png", // Replace with your actual image path
+    image: "/ThirdTemplateThumbnail.png",
   },
   {
     id: "fourth-template",
     name: "fourth-template",
-    image: "/heroSnapshot.png", // Replace with your actual image path
+    image: "/ForthTemplateThumbnail.png",
   },
 ];
 
@@ -39,7 +38,7 @@ const TemplateSelectionModal = ({
       {/* Modal Container */}
       <div className="bg-white rounded-xl shadow-2xl p-6 md:p-10 max-w-6xl w-full mx-4 max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100">
         <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">
-          Choose a Resume Template 
+          Choose a Resume Template
         </h2>
 
         <p className="text-gray-600 mb-8">
