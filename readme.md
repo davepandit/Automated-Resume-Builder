@@ -1,10 +1,14 @@
 # Automated Resume Builder
 
-A modern web application that helps users create professional resumes with AI-powered content generation, multiple templates, and easy customization options.
+A modern web application that helps users create professional resumes with AI-powered sugggestions and content generation, multiple templates, and easy customization options.
 
 ## Features
+- **User Management** (with proper validation)
+  - Secure authentication
+  - Save multiple resumes
+  - Edit saved resumes
 
-- **AI-Powered Content Generation**
+- **AI-Powered Suggestions and Content Generation**
   - Auto-generate professional summaries and descriptions
   - Smart content suggestions for skills and experiences
   
@@ -22,12 +26,7 @@ A modern web application that helps users create professional resumes with AI-po
 - **Export Options**
   - Download as PDF
   - Export as Word document
-  - Shareable public links
 
-- **User Management** (with proper validation)
-  - Secure authentication
-  - Save multiple resumes
-  - Edit saved resumes
 
 ## 🛠️ Tech Stack
 
